@@ -1,0 +1,3 @@
+User-agent: *
+Disallow: /charge.php
+Sitemap: http://fichescapeps2025.fr/sitemap.xml

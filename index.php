@@ -3,34 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Page de commande</title>
-    <style>
-         form{
-            max-width: 400px;
-         }
-    </style>
+    <meta name="description" content="Achetez des fiches CAPEPS 2025 de haute qualité pour préparer vos examens.">
+    <title>Fiches CAPEPS à vendre | 2025</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <form action="charge.php" method="post" id="payment-form">
-        <div>
-            <label for="first-name">Prénom</label>
-            <input type="text" id="first-name" name="first-name" required>
+    <?php include 'navbar.php'; ?>
+    <h1>Fiches CAPEPS à vendre</h1>
+    <div class="products">
+        <div class="product">
+            <h2>Fiche 1</h2>
+            <p>10€</p>
+            <button onclick="addToCart('fiche1', 10)">Ajouter au panier</button>
         </div>
-        <div>
-            <label for="last-name">Nom</label>
-            <input type="text" id="last-name" name="last-name" required>
+        <div class="product">
+            <h2>Fiche 2</h2>
+            <p>10€</p>
+            <button onclick="addToCart('fiche2', 10)">Ajouter au panier</button>
         </div>
-        <input type="hidden" name="amount" value="10">
-        <div id="card-element">
-    
-    
+        <div class="product">
+            <h2>Fiche 3</h2>
+            <p>10€</p>
+            <button onclick="addToCart('fiche3', 10)">Ajouter au panier</button>
         </div>
-        <div id="card-errors" role="alert">
-    
+        <div class="product">
+            <h2>Fiche 4</h2>
+            <p>10€</p>
+            <button onclick="addToCart('fiche4', 10)">Ajouter au panier</button>
         </div>
-        <button type="submit" >Payer</button>
-    </form>
-    <script src="https://js.stripe.com/v3/"></script>
+    </div>
     <script src="app.js"></script>
 </body>
 </html>

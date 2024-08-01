@@ -1,40 +1,54 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+header("Content-Security-Policy: default-src 'self'; script-src 'self' https://js.stripe.com; style-src 'self'");
+
 require 'vendor/autoload.php';
 
 \Stripe\Stripe::setApiKey('sk_test_51PQWT6RvBURxGjZokRI6yu3WaxIKCK98HOKAkseLFnH6qrE5Qog7r7pEVs0GGN4FhcW8CORMbJyyjPz9wewHW0fU001sSIzXW9');
 
+if (isset($_POST['stripeToken'], $_POST['email'], $_POST['cart'])) {
+    $token = htmlspecialchars($_POST['stripeToken']);
+    $email = filter_var($_POST['email'], FILTER_VALIDATE_EMAIL);
+    $cart = json_decode($_POST['cart'], true);
 
-$response = ["payment" => "error", "amount" => 0];
+    if ($email && $cart) {
+        $amount = array_reduce($cart, function($total, $item) {
+            return $total + $item['price'];
+        }, 0) * 100;
 
-if(isset($_POST['stripeToken'], $_POST['amount'],$_POST['first-name'], $_POST['last-name'])){
-    $token = $_POST['stripeToken'];
-    $amount = $_POST['amount'];
-    $first_name = $_POST['first-name'];
-    $last_name = $_POST['last-name'];
-    
-    $amount = $amount * 100;
-    try{
-        $charge = \Stripe\Charge::create([
-            'amount' => $amount,
-            'currency' => 'eur',
-            'description' => 'Example charge',
-            'source' => $token,
-            'metadata' => [
-                'first_name' => $first_name,
-                'last_name' => $last_name
-            ]]);
+        try {
+            $charge = \Stripe\Charge::create([
+                'amount' => $amount,
+                'currency' => 'eur',
+                'description' => 'Achat de fiches CAPEPS',
+                'source' => $token,
+                'receipt_email' => $email
+            ]);
 
-            echo 'Success! Your payment has been accepted.'; 
- 
+            require 'mail.php';
 
-        }catch(\Stripe\Exception\CardException $e){
-            $response['message'] = $e->getMessage();
-        }catch(\Exception $e){
-            $response['message'] = $e->getMessage();
-        
+            // header('Location: payment_success.php');
+            exit();
+        } catch (\Stripe\Exception\CardException $e) {
+            error_log('Stripe CardException: ' . $e->getMessage());
+            // header('Location: payment_failed.php');
+            exit();
+        } catch (\Exception $e) {
+            error_log('Exception: ' . $e->getMessage());
+            // header('Location: payment_failed.php');
+            exit();
+        }
+    } else {
+        error_log('Invalid email or empty cart');
+        // header('Location: payment_failed.php');
+        exit();
     }
+} else {
+    error_log('Missing required input');
+    // header('Location: payment_failed.php');
+    exit();
 }
-
-echo json_encode($response);
-
 ?>
